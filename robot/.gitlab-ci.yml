@@ -1,0 +1,49 @@
+stages:
+  - lint
+  - test
+
+default:
+  image: python:3.11
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  key:
+    files:
+      - requirements.txt
+  paths:
+    - .cache/pip
+
+lint:
+  stage: lint
+  allow_failure: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - pip install ruff
+    - ruff check src/ tests/
+
+test:
+  stage: test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - pip install pin numpy pytest
+    - pytest tests/ -v --junitxml=.test-reports/report.xml
+  artifacts:
+    when: always
+    paths:
+      - .test-reports/
+    reports:
+      junit:
+        - .test-reports/report.xml

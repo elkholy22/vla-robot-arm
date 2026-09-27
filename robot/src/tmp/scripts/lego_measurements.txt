@@ -1,0 +1,8 @@
+Here are some measurements for some lego technic bricks, and for the motors as well. In addition to that you can find some specifications about the motors (e.g. effiency, ...).
+
+- https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Ftechnic-parts-measurements-v0-xlgp0n8x6zge1.jpeg%3Fwidth%3D3308%26format%3Dpjpg%26auto%3Dwebp%26s%3D869d5a684cfa6f51fe8f69ebf08738398917a7fc
+- https://wildbits.de/wp-content/uploads/2021/04/anatomie_liftarm.png
+- https://www.betzold.de/prod/E_761142/?srsltid=AfmBOoq6iaOzsQq_wONRQCwlGBZlb1voZgWs1WP34TIvGzJtBllA0v6K
+- https://www.betzold.de/prod/E_761141/
+- https://assets.education.lego.com/v3/assets/blt293eea581807678a/bltb9abb42596a7f1b3/5f8801b5f4c5ce0e93db1587/le_spike-prime_tech-fact-sheet_45602_1hy19.pdf?locale=de-de
+- https://assets.education.lego.com/v3/assets/blt293eea581807678a/blt692436dd1e8fa71c/5f8801d5c8a27c1d9614c27e/techspecs_technicmediumangularmotor.pdf?locale=de-de

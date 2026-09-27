@@ -1,0 +1,24 @@
+# Core
+numpy
+scipy
+opencv-python
+
+# Octo model (JAX-based)
+# jax[cuda12]  # uncomment for GPU support
+# octo-model   # install from: https://github.com/octo-models/octo
+
+# Kinematics
+# ikpy        # inverse kinematics library
+# urdfpy      # URDF parsing
+
+# Networking
+# zmq         # alternative to raw TCP sockets
+
+# Training & evaluation
+# tensorflow-datasets
+# wandb       # experiment tracking
+
+# Utilities
+pyyaml
+tqdm
+Pillow

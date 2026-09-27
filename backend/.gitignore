@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Model weights and checkpoints 
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+*.msgpack
+wandb/
+
+# Training data 
+data/
+datasets/
+*.tfrecord
+*.hdf5
+*.h5
+*.npy
+*.npz
+
+# Recordings
+recordings/
+*.mp4
+*.avi
+*.jpg
+*.jpeg
+!docs/**/*.png
+!docs/**/*.jpg
+
+# Config with secrets
+.env
+config/local.yaml
+
+# JAX/XLA
+*.jax
+.jax_cache/

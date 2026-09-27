@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="switcher">
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <!-- BASE zu J1: 66mm Montagehoehe, limits in radians, (Platzhalter: effort in Nm, velocity in rad/s) -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0.0 0.0 0.066" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit lower="-3.14159" upper="3.14159" effort="10.0" velocity="3.14159"/>
+  </joint>
+
+  <link name="link1">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <!-- J1 zu J2: Limits: 85 Grad aufwaerts, 50 Grad abwaerts. 48mm radial (3 x 16mm Steinlochabstand wie ueberall), 130mm nach oben -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <origin xyz="0.048 0.0 0.130" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="-1.48353" upper="0.87267" effort="10.0" velocity="3.14159"/>
+  </joint>
+
+  <link name="link2">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <!-- J2 zu J3: Limits: 85 Grad aufwaerts und 85 Grad abwaerts, 120mm horizontal -->
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <origin xyz="0.120 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="-1.48353" upper="1.48353" effort="10.0" velocity="3.14159"/>
+  </joint>
+
+  <link name="link3">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <!-- J3 zu EE: 160mm horizontal (X) -->
+  <joint name="ee_joint" type="fixed">
+    <parent link="link3"/>
+    <child link="end_effector"/>
+    <origin xyz="0.160 0.0 0.0" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <link name="end_effector">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+  </link>
+
+</robot>

@@ -1,0 +1,88 @@
+stages:
+  - build
+  - verify
+  - deploy
+
+
+# BUILD: Kaniko builds the image 
+# and pushes it to this project's registry. Only on recipe changes.
+
+build-image:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - Dockerfile
+        - environment.yml
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+      allow_failure: true
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}:latest"
+      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+
+# LINT: fast style/quality pass on a plain CPU image. Non-blocking 
+
+lint:
+  stage: verify
+  image: python:3.11
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        - src/**/*
+        - .gitlab-ci.yml
+    - if: $CI_MERGE_REQUEST_ID
+  script:
+    - pip install ruff
+    - ruff check src/
+  allow_failure: true
+# VERIFY: pull the freshly built image on a shared runner and confirm the
+# environment imports cleanly. (No GPU here shared runners are CPU only;
+# the GPU check happens in deploy, on the real hardware.)
+
+env-check:
+  stage: verify
+  image: ${CI_REGISTRY_IMAGE}:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        - src/**/*
+        - environment.yml
+        - Dockerfile
+        - .gitlab-ci.yml
+    - if: $CI_MERGE_REQUEST_ID
+  script:
+    - python -c "import jax, flax; from octo.model.octo_model import OctoModel; import pinocchio; print('env ok', jax.__version__, flax.__version__)"
+    - cd src && python -c "import ast; [ast.parse(open(f).read()) for f in ['model/cln.py','model/wrapper.py','finetuning/finetune.py','finetuning/eval_offline.py','shared/classes.py','shared/utils.py']]; print('syntax ok')"
+
+
+# DEPLOY: runs ON themachine via the self-hosted runner (tag: themachine).
+# Pulls the new image and verifies it actually sees the GPU on the real box.
+
+deploy-image:
+  stage: deploy
+  tags:
+    - themachine
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"
+      changes:
+        - Dockerfile
+        - environment.yml
+  before_script:
+    - echo "${CI_REGISTRY_PASSWORD}" | docker login "${CI_REGISTRY}" -u "${CI_REGISTRY_USER}" --password-stdin
+  script:
+    - docker pull "${CI_REGISTRY_IMAGE}:latest"
+    - docker pull "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+    - >-
+      docker run --rm --gpus all "${CI_REGISTRY_IMAGE}:latest"
+      python -c "import jax; print('backend:', jax.default_backend(), 'devices:', jax.devices()); assert jax.default_backend() == 'gpu', 'GPU not visible in deployed image'"
+    - docker image inspect "${CI_REGISTRY_IMAGE}:latest" --format 'deployed {{.Id}} (created {{.Created}})'
